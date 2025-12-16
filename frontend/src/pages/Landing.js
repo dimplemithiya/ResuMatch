@@ -1,10 +1,53 @@
-import { ArrowRight, Sparkles, Target, BarChart3, Zap } from 'lucide-react';
+import { ArrowRight, Sparkles, Target, BarChart3, Zap, Mail, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useState } from 'react';
 
 const Landing = () => {
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
   const handleLogin = () => {
     const redirectUrl = window.location.origin + '/dashboard';
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+  };
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+
+    try {
+      const backendUrl = import.meta.env.REACT_APP_BACKEND_URL || process.env.REACT_APP_BACKEND_URL;
+      const response = await fetch(`${backendUrl}/api/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(contactForm),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit form');
+      }
+
+      setSubmitStatus('success');
+      setContactForm({ name: '', email: '', message: '' });
+      
+      // Reset success message after 5 seconds
+      setTimeout(() => setSubmitStatus('idle'), 5000);
+    } catch (error) {
+      console.error('Contact form error:', error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -153,6 +196,95 @@ const Landing = () => {
         </div>
       </div>
 
+      {/* Contact Us Section */}
+      <div className="py-20 md:py-32 bg-secondary">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 mb-4">
+              <Mail className="h-8 w-8 text-primary" />
+            </div>
+            <h2 className="text-4xl md:text-5xl font-heading font-bold tracking-tight text-primary mb-4">
+              Get in Touch
+            </h2>
+            <p className="text-lg text-primary/70">
+              Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+            </p>
+          </div>
+
+          <div className="bg-white border border-primary/10 p-8 md:p-12 shadow-brutal">
+            <form onSubmit={handleContactSubmit} className="space-y-6">
+              <div>
+                <label htmlFor="name" className="block font-mono text-xs uppercase tracking-widest text-primary mb-2">
+                  Your Name
+                </label>
+                <Input
+                  id="name"
+                  type="text"
+                  required
+                  value={contactForm.name}
+                  onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                  className="rounded-none border-2 border-primary/20 focus:border-primary h-12"
+                  placeholder="John Doe"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="email" className="block font-mono text-xs uppercase tracking-widest text-primary mb-2">
+                  Email Address
+                </label>
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  value={contactForm.email}
+                  onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                  className="rounded-none border-2 border-primary/20 focus:border-primary h-12"
+                  placeholder="john@example.com"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="message" className="block font-mono text-xs uppercase tracking-widest text-primary mb-2">
+                  Message
+                </label>
+                <Textarea
+                  id="message"
+                  required
+                  value={contactForm.message}
+                  onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                  className="rounded-none border-2 border-primary/20 focus:border-primary min-h-[150px] resize-y"
+                  placeholder="Tell us how we can help you..."
+                />
+              </div>
+
+              {submitStatus === 'success' && (
+                <div className="bg-accent/10 border border-accent p-4">
+                  <p className="text-sm font-mono text-primary">
+                    ✓ Message sent successfully! We'll get back to you soon.
+                  </p>
+                </div>
+              )}
+
+              {submitStatus === 'error' && (
+                <div className="bg-destructive/10 border border-destructive p-4">
+                  <p className="text-sm font-mono text-destructive">
+                    ✗ Failed to send message. Please try again or email us directly.
+                  </p>
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-none px-8 py-6 font-mono uppercase tracking-wider text-sm shadow-brutal hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-brutal-hover transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Sending...' : 'Send Message'} <Send className="ml-2 h-4 w-4" />
+              </Button>
+            </form>
+          </div>
+        </div>
+      </div>
+
       {/* CTA Section */}
       <div className="py-20 md:py-32 bg-primary">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -173,10 +305,52 @@ const Landing = () => {
       </div>
 
       {/* Footer */}
-      <div className="bg-secondary border-t border-primary/10 py-8">
+      <div className="bg-secondary border-t border-primary/10 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center text-sm text-primary/60 font-mono">
-            © 2025 ResuMatch AI. Powered by Gemini 2.5 Flash.
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 bg-primary flex items-center justify-center">
+                  <span className="text-accent font-mono font-bold text-xl">R</span>
+                </div>
+                <span className="font-heading font-bold text-lg text-primary">ResuMatch AI</span>
+              </div>
+              <p className="text-sm text-primary/60">
+                AI-powered resume analysis to help you land your dream job.
+              </p>
+            </div>
+            
+            <div>
+              <h3 className="font-mono text-xs uppercase tracking-widest text-primary mb-4">Quick Links</h3>
+              <ul className="space-y-2 text-sm text-primary/70">
+                <li><a href="#features" className="hover:text-primary transition-colors">Features</a></li>
+                <li><a href="#contact" className="hover:text-primary transition-colors">Contact</a></li>
+                <li><button onClick={handleLogin} className="hover:text-primary transition-colors">Dashboard</button></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="font-mono text-xs uppercase tracking-widest text-primary mb-4">Support</h3>
+              <ul className="space-y-2 text-sm text-primary/70">
+                <li>
+                  <a href="mailto:helpfinsight@gmail.com" className="hover:text-primary transition-colors flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    helpfinsight@gmail.com
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="border-t border-primary/10 pt-8">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <div className="text-sm text-primary/60 font-mono">
+                © 2025 ResuMatch AI. Powered by Gemini 2.5 Flash.
+              </div>
+              <div className="text-sm text-primary/60 font-mono">
+                Created by <span className="text-primary font-semibold">Team Finsight</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

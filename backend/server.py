@@ -5,7 +5,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from typing import List, Optional
 import uuid
 from datetime import datetime, timezone, timedelta
@@ -15,6 +15,9 @@ import docx
 import json
 import httpx
 import io
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -71,6 +74,11 @@ class SessionData(BaseModel):
     name: str
     picture: str
     session_token: str
+
+class ContactRequest(BaseModel):
+    name: str
+    email: EmailStr
+    message: str
 
 # Helper Functions
 async def get_current_user(session_token: Optional[str] = Cookie(None)) -> str:
@@ -203,16 +211,75 @@ IMPORTANT:
         logging.error(f"AI analysis error: {e}")
         raise HTTPException(status_code=500, detail=f"AI analysis failed: {str(e)}")
 
+async def send_email(to_email: str, name: str, user_message: str):
+    """Send email using Gmail SMTP"""
+    try:
+        # Email configuration
+        smtp_server = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+        smtp_port = int(os.environ.get('EMAIL_PORT', 587))
+        sender_email = os.environ.get('EMAIL_USER')
+        sender_password = os.environ.get('EMAIL_PASS')
+        
+        if not sender_email or not sender_password:
+            raise HTTPException(status_code=500, detail="Email configuration missing")
+        
+        # Create message
+        message = MIMEMultipart("alternative")
+        message["Subject"] = f"Contact Form Submission from {name}"
+        message["From"] = sender_email
+        message["To"] = to_email
+        
+        # Create HTML content
+        html_content = f"""
+        <html>
+          <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
+              <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+                New Contact Form Submission
+              </h2>
+              <div style="margin: 20px 0;">
+                <p><strong>From:</strong> {name}</p>
+                <p><strong>Email:</strong> {to_email}</p>
+              </div>
+              <div style="background-color: #f8f9fa; padding: 15px; border-left: 4px solid #3498db; margin: 20px 0;">
+                <h3 style="margin-top: 0; color: #2c3e50;">Message:</h3>
+                <p style="white-space: pre-wrap;">{user_message}</p>
+              </div>
+              <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #7f8c8d;">
+                <p>This is an automated message from ResuMatch AI Contact Form.</p>
+                <p>Support: helpfinsight@gmail.com</p>
+              </div>
+            </div>
+          </body>
+        </html>
+        """
+        
+        # Attach HTML content
+        html_part = MIMEText(html_content, "html")
+        message.attach(html_part)
+        
+        # Send email
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.send_message(message)
+        
+        logging.info(f"Email sent successfully to {to_email}")
+        
+    except Exception as e:
+        logging.error(f"Email sending error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")
+
 # Auth Routes
 @api_router.post("/auth/session")
 async def create_session(session_data: dict, response: Response):
-    """Exchange session_id from Emergent Auth for user data and create session"""
+    """Exchange session_id from Google OAuth for user data and create session"""
     try:
         session_id = session_data.get("session_id")
         if not session_id:
             raise HTTPException(status_code=400, detail="session_id required")
         
-        # Call Emergent Auth API
+        # Call Google OAuth API with provided credentials
         async with httpx.AsyncClient() as client:
             auth_response = await client.get(
                 "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
@@ -304,6 +371,32 @@ async def logout(response: Response, session_token: Optional[str] = Cookie(None)
         samesite="none"
     )
     return {"message": "Logged out successfully"}
+
+# Contact API Route
+@api_router.post("/contact")
+async def contact_form(contact: ContactRequest):
+    """Handle contact form submission and send email"""
+    try:
+        # Send email to user
+        await send_email(contact.email, contact.name, contact.message)
+        
+        # Store contact submission in database
+        contact_doc = {
+            "contact_id": f"contact_{uuid.uuid4().hex[:12]}",
+            "name": contact.name,
+            "email": contact.email,
+            "message": contact.message,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.contacts.insert_one(contact_doc)
+        
+        return {"message": "Contact form submitted successfully. We'll get back to you soon!"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Contact form error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to submit contact form")
 
 # Resume Analysis Routes
 @api_router.post("/analyze")
