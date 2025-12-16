@@ -1,0 +1,143 @@
+{
+  "brand_identity": {
+    "name": "ResuMatch AI",
+    "archetype": "Professional Zen (Organic + Swiss)",
+    "core_values": ["Precision", "Growth", "Clarity", "Empowerment"],
+    "emotional_tone": "Calm, Insightful, Surgical, Optimistic"
+  },
+  "typography": {
+    "headings": {
+      "font_family": "Outfit, sans-serif",
+      "weights": ["600", "800"],
+      "usage": "Use for all H1-H6. Tight tracking (-0.02em).",
+      "fallback": "system-ui"
+    },
+    "body": {
+      "font_family": "Manrope, sans-serif",
+      "weights": ["400", "500"],
+      "usage": "Main content, descriptions, long form text.",
+      "fallback": "sans-serif"
+    },
+    "mono": {
+      "font_family": "JetBrains Mono, monospace",
+      "weights": ["400"],
+      "usage": "Data points, scores, code snippets, ATS keywords.",
+      "fallback": "monospace"
+    },
+    "scale": {
+      "h1": "text-5xl md:text-7xl font-extrabold tracking-tighter",
+      "h2": "text-3xl md:text-5xl font-bold tracking-tight",
+      "h3": "text-2xl md:text-3xl font-semibold",
+      "body_lg": "text-lg md:text-xl leading-relaxed",
+      "body_base": "text-base leading-relaxed",
+      "caption": "text-xs uppercase tracking-widest font-mono"
+    }
+  },
+  "colors": {
+    "palette": {
+      "primary": {
+        "DEFAULT": "#0F291E",
+        "foreground": "#F5F5F0",
+        "description": "Deep Forest Green - The grounding force."
+      },
+      "secondary": {
+        "DEFAULT": "#F5F5F0",
+        "foreground": "#0F291E",
+        "description": "Stone/Sand - The canvas."
+      },
+      "accent": {
+        "DEFAULT": "#CCFF00",
+        "foreground": "#0F291E",
+        "description": "Electric Lime - The AI insight/Score."
+      },
+      "muted": {
+        "DEFAULT": "#E6E6E1",
+        "foreground": "#5C5C58"
+      },
+      "destructive": {
+        "DEFAULT": "#FF4D00",
+        "foreground": "#FFFFFF",
+        "description": "International Orange - Errors/Missing Skills."
+      },
+      "background": "#F5F5F0",
+      "foreground": "#0F291E"
+    },
+    "gradients": {
+      "score_high": "bg-gradient-to-r from-[#CCFF00] to-[#99CC00]",
+      "score_med": "bg-gradient-to-r from-[#FFD700] to-[#FFA500]",
+      "score_low": "bg-gradient-to-r from-[#FF4D00] to-[#CC3300]",
+      "hero_glow": "bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#CCFF00]/20 via-transparent to-transparent"
+    }
+  },
+  "visual_enhancers": {
+    "radius": "rounded-none",
+    "borders": "border border-primary/10",
+    "shadows": {
+      "card": "shadow-[4px_4px_0px_0px_rgba(15,41,30,1)]",
+      "hover": "shadow-[6px_6px_0px_0px_rgba(15,41,30,1)]",
+      "glass": "backdrop-blur-md bg-white/60 border-white/20 shadow-sm"
+    },
+    "textures": "bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"
+  },
+  "grids": {
+    "marketing": "grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8",
+    "dashboard": "grid grid-cols-1 md:grid-cols-4 gap-4",
+    "bento_item": "relative overflow-hidden border border-primary/10 bg-white p-6 md:p-8"
+  },
+  "layouts": {
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "section_spacing": "py-20 md:py-32",
+    "dashboard_shell": "flex h-screen overflow-hidden bg-secondary"
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 rounded-none px-8 py-6 font-mono uppercase tracking-wider text-sm shadow-[4px_4px_0px_0px_#CCFF00] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_#CCFF00] transition-all",
+      "secondary": "bg-white border-2 border-primary text-primary hover:bg-primary/5 rounded-none px-8 py-6 font-mono uppercase tracking-wider text-sm transition-all",
+      "ghost": "hover:bg-primary/5 text-primary rounded-none px-4 py-2 font-medium"
+    },
+    "cards": {
+      "base": "bg-white border border-primary/10 rounded-none p-6",
+      "interactive": "group hover:border-primary/30 transition-colors cursor-pointer"
+    },
+    "inputs": {
+      "base": "rounded-none border-2 border-primary/10 bg-white px-4 py-3 focus:border-primary focus:ring-0 font-mono text-sm"
+    }
+  },
+  "motion": {
+    "transitions": "transition-all duration-300 ease-out",
+    "hover_lift": "hover:-translate-y-1",
+    "page_enter": {
+      "initial": { "opacity": 0, "y": 20 },
+      "animate": { "opacity": 1, "y": 0 },
+      "exit": { "opacity": 0, "y": -20 }
+    }
+  },
+  "media": {
+    "image_style": "grayscale hover:grayscale-0 transition-all duration-500 mix-blend-multiply",
+    "icons": "Lucide React (Stroke width: 1.5px)"
+  },
+  "image_urls": {
+    "hero_bg": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80",
+    "team_working": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80",
+    "abstract_data": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80",
+    "success_person": "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80"
+  },
+  "instructions_to_main_agent": [
+    "1. INSTALL FONTS: Add 'Outfit', 'Manrope', and 'JetBrains Mono' via Google Fonts in index.html or CSS.",
+    "2. CONFIGURE TAILWIND: Update tailwind.config.js with the specific colors (Deep Forest, Electric Lime) and border radius (0px).",
+    "3. SHADCN OVERRIDE: When using Shadcn components, strip the 'rounded-md' classes and replace with 'rounded-none'. Add the custom shadow styles.",
+    "4. LAYOUT STRATEGY: Use the 'Tetris Grid' for the landing page. Don't just stack sections. Overlap them slightly using negative margins if needed for the 'Anti-AI' look.",
+    "5. DASHBOARD VISUALS: Use 'Recharts' for the analytics. Style the charts to match the palette (Green/Lime/Orange). No default blue charts.",
+    "6. AUTH FLOW: Customize the Google Auth button. Don't use the default white/blue pill. Make it fit the 'Professional Zen' theme (e.g., Black button with white logo).",
+    "7. SKILL GAP ANALYSIS: This is the core feature. Design this section with high contrast. Matched skills = Green pill, Missing = Orange outline pill.",
+    "8. USE SONNER: Replace any default toast with Sonner.",
+    "9. DATA-TESTID: Ensure every interactive element has a data-testid attribute."
+  ],
+  "universal_guidelines": [
+    "Do not use gradients for backgrounds unless specified (use solid colors or subtle noise).",
+    "Avoid 'Inter' font. Use the specified font stack.",
+    "Ensure all text has sufficient contrast (APCA/WCAG AA).",
+    "Use 'gap-8' or 'gap-12' for layout spacing to create breathing room.",
+    "Micro-interactions are mandatory for all buttons and cards."
+  ]
+}
